@@ -60,7 +60,7 @@
 $searchDomains=""
 
 # CHECK TO SEE IF A VALUE WAS PASSED IN PARAMETER 4 AND, IF SO, ASSIGN TO "timeServer"
-if [ "$4" != "" ] && [ "$timeServer" == "" ]
+if [ "$4" != "" ] && [ "$searchDomains" == "" ]
 then
     $searchDomains=$4
 fi
