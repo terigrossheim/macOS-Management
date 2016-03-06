@@ -47,6 +47,23 @@
 # Header ends
 #
 ##########################################################################################
+#
+# Declare Variables
+#
+##########################################################################################
+
+# $searchDomains is meant to contain a space-separated list of the computers' intended 
+# search domains. For example:
+# "subdomain1.domain.ext subdomain2.domain.ext subdomain3.domain.ext domain.ext"
+
+# HARDCODED VALUES ARE SET HERE
+$searchDomains=""
+
+# CHECK TO SEE IF A VALUE WAS PASSED IN PARAMETER 4 AND, IF SO, ASSIGN TO "timeServer"
+if [ "$4" != "" ] && [ "$timeServer" == "" ]
+then
+    $searchDomains=$4
+fi
 
 ##########################################################################################
 #
@@ -60,15 +77,11 @@ OLDIFS=$IFS
 # Set IFS to newline
 IFS=$'\n'
 
-# Loop through configured network services
+# Loop through configured network services, setting search domains for each
 for x in `networksetup -listallnetworkservices | sed 's/*//g' | sed '1d'`
      do
-     
-          # set search domains - replace "subdomain1.domain.ext subdomain2.domain.ext subdomain3.domain.ext domain.ext"
-          # with the intended list of search domains, separated by spaces.
-          
-          networksetup -setsearchdomains "$x" subdomain1.domain.ext subdomain2.domain.ext subdomain3.domain.ext domain.ext
-    done
+          networksetup -setsearchdomains "$x" $searchDomains
+     done
 
 #return IFS to normal
 IFS=$OLDIFS
