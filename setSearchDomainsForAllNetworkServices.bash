@@ -59,7 +59,7 @@
 # HARDCODED VALUES ARE SET HERE
 $searchDomains=""
 
-# CHECK TO SEE IF A VALUE WAS PASSED IN PARAMETER 4 AND, IF SO, ASSIGN TO "timeServer"
+# CHECK TO SEE IF A VALUE WAS PASSED IN PARAMETER 4 AND, IF SO, ASSIGN TO "searchDomains"
 if [ "$4" != "" ] && [ "$searchDomains" == "" ]
 then
     $searchDomains=$4
