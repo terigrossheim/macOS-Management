@@ -27,3 +27,7 @@ visudo -c -f /etc/sudoers.work
 
 # Replace sudoers file with working copy
 mv /etc/sudoers.work /etc/sudoers
+
+# Verify new sudoers file
+visudo -c -f /etc/sudoers
+## replace with sudoers.bak and error message if failed
