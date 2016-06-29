@@ -1,5 +1,5 @@
-# OS X Settings
-Scripts to change settings in OS X
+# macOS Settings
+Scripts to change settings in macOS
 
 ## removeSsidFromPreferredList.bash
 Removes a specified SSID from the wireless interface's preferred networks list if the computer is not connected to the specified SSID at runtime.
