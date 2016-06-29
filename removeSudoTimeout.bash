@@ -3,14 +3,15 @@
 # remove sudo timeout
 
 # Make a backup of sudoers file
-cp /etc/sudoers /etc/sudoers.bak
+
+cp /etc/sudoers{,.bak}
 
 # Verify backup sudoers file
 visudo -c -f /etc/sudoers.bak
 ## add bailout and error message if failed
 
 # Make a working copy of sudoers file
-cp /etc/sudoers /etc/sudoers.work
+cp /etc/sudoers{,.work}
 
 # Verify working copy of sudoers file
 visudo -c -f /etc/sudoers.work
