@@ -9,3 +9,10 @@ Finds all configured network services and sets the designated search domains for
 
 ## removeSudoTimeout.bash
 Removes the five minute grace period for sudo commands. Once run successfully, every sudo command will require authentication.
+
+## softwareUpdateWithChecksAndBalances.bash
+* Calls custom triggered policies to handle executing the updates.
+* If no one is logged in, all updates are installed, rebooting if necessary.
+* If no updates require reboot, only those updates not requiring reboot are installed.
+* If updates that require reboot are available, someone is logged in and Do not disturb is off, the user is prompted.
+**
