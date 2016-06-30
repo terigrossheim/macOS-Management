@@ -15,4 +15,4 @@ Removes the five minute grace period for sudo commands. Once run successfully, e
 * If no one is logged in, all updates are installed, rebooting if necessary.
 * If no updates require reboot, only those updates not requiring reboot are installed.
 * If updates that require reboot are available, someone is logged in and Do not disturb is off, the user is prompted.
-**
+ * User may defer 4 times
