@@ -1,14 +1,17 @@
 # macOS Management
 Scripts to manage and change settings in macOS
 
+## com.company.team.ReconOnOsOrAppChange.plist
+LaunchDaemon to update inventory for Casper Suite-managed Macs whenever the contents of /Applications/ or /System/Library/CoreServices/ are changed.
+
 ## removeSsidFromPreferredList.bash
 Removes a specified SSID from the wireless interface's preferred networks list if the computer is not connected to the specified SSID at runtime.
 
-## setSearchDomainsForAllNetworkServices.bash
-Finds all configured network services and sets the designated search domains for each.
-
 ## removeSudoTimeout.bash
 Removes the five minute grace period for sudo commands. Once run successfully, every sudo command will require authentication.
+
+## setSearchDomainsForAllNetworkServices.bash
+Finds all configured network services and sets the designated search domains for each.
 
 ## softwareUpdateWithChecksAndBalances.bash
 * Calls custom triggered policies to handle executing the updates.
