@@ -1,6 +1,9 @@
 # macOS Management
 Scripts to manage and change settings in macOS
 
+## clearSoftwareUpdateCatalogURL.bash
+Deletes custom software update server values to point Mac back to Apple's public update servers.
+
 ## com.company.team.ReconOnOsOrAppChange.plist
 LaunchDaemon to update inventory for Casper Suite-managed Macs whenever the contents of /Applications/ or /System/Library/CoreServices/ are changed.
 
