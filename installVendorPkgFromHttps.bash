@@ -59,4 +59,8 @@ installerExitCode=$?
 		exit 2
 	fi
 
+# Cleanup
+rm -rf "$downloadDirectory"/"$pkgName"
+rm -rf "$choiceFile"
+
 exit 0
