@@ -9,10 +9,10 @@ LaunchDaemon to update inventory for Casper Suite-managed Macs whenever the cont
 
 ## installVendorPkgFromHttps.bash
 Downloads and installs a package from the vendor's https download link.
-Parameter 4 is the URL to the package.
-Parameter 5 is a space-delimited list of installer choices used to build an installer choices XML file.
-  Populating parameter 5 causes the installer choices function to be used.
-  Leaving parameter 5 empty omits the installer choices option.
++ Parameter 4 is the URL to the package.
++ Parameter 5 is a space-delimited list of installer choices used to build an installer choices XML file.
+  + + Populating parameter 5 causes the installer choices function to be used.
+  + + Leaving parameter 5 empty omits the installer choices option.
 
 ## removeSsidFromPreferredList.bash
 Removes a specified SSID from the wireless interface's preferred networks list if the computer is not connected to the specified SSID at runtime.
