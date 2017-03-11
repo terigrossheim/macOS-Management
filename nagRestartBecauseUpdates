@@ -1,9 +1,24 @@
 #!/bin/bash
 
+#### ABOUT
+#
+# This script is meant to be used as a LaunchDaemon that runs daily on a Jamf Pro-managed Mac.
+#
+# Stores the age of restart-required updates in plist
+#
+# Nags user daily when there are updates that require restart
+# 
+# When the maximum update age is reached as defined in VARIABLES below, the user is notified and updates are forced
+#
+#####
+
 ##### VARIABLES
 
+# Maximum age of restart-required updates (in days) before updates and restart are forced.
+maxUpdateAge="14"
+
 # Absolute path to local plist for config & management data
-localDataPlist="/path/to/local/data.plist"
+localDataPlist="/Library/myOrg/Data/com.myOrg.jamfLocalExtensionAttributes.plist"
 # Path without filename derived from above localDataPlist value
 localDataPlistPath=$( dirname "$localDataPlist" )
 
@@ -42,5 +57,12 @@ else
   /usr/libexec/PlistBuddy -c "Set :software:macOS:softwareUpdates:daysRestartHasBeenRequired 0" "$localDataPlist"
 fi
 
-# Notify user
-/Library/Application\ Support/JAMF/bin/Management\ Action.app/Contents/MacOS/Management\ Action -title 'Apple Updates Required' -subtitle "Uninstalled patches are $daysRestartHasBeenRequired day(s) old" -message 'Update in Self Service or App Store.'
+# Notify and/or update
+if [ "$daysRestartHasBeenRequired" -gt 0 ] && [ "$daysRestartHasBeenRequired" -lt "$maxUpdateAge" ]; then
+  /Library/Application\ Support/JAMF/bin/Management\ Action.app/Contents/MacOS/Management\ Action -title 'Apple Updates Required' -subtitle "Uninstalled patches are $daysRestartHasBeenRequired day(s) old" -message 'Update in Self Service or App Store.'
+else
+  /Library/Application\ Support/JAMF/bin/Management\ Action.app/Contents/MacOS/Management\ Action -title 'Apple Updates Required' -subtitle "Uninstalled patches are > $maxUpdateAge days old" -message 'Update & restart will begin now.'
+  jamf policy -event installAppleUpdatesAndRestartNow
+fi
+
+exit 0
