@@ -10,6 +10,17 @@
 # 
 # When the maximum update age is reached as defined in VARIABLES below, the user is notified and updates are forced
 #
+# Desired improvements...
+#	In "Increment (if restart required) or reset (if not) daysRestartHasBeenRequired in plist"
+#	- Account for computers that spend ≥ 24 hours powered down...
+#		- get plist file modification date - plistModDate=$( stat -f "%Sm" -t "%Y-%m-%d" "$localDataPlist" )
+#		- get today's date - todaysDate=$( date +%Y-%m-%d )
+#		- get difference - 
+#		- if plist file modification date is not today
+#			- get number of days since modification date
+#			- add number of days since modification date to $daysRestartHasBeenRequired
+#		- else continue with existing script
+#
 #####
 
 ##### VARIABLES
