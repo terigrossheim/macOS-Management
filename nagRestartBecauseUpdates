@@ -10,16 +10,7 @@
 # 
 # When the maximum update age is reached as defined in VARIABLES below, the user is notified and updates are forced
 #
-# Desired improvements...
-#	In "Increment (if restart required) or reset (if not) daysRestartHasBeenRequired in plist"
-#	- Account for computers that spend ≥ 24 hours powered down...
-#		- get plist file modification date - plistModDate=$( stat -f "%Sm" -t "%Y-%m-%d" "$localDataPlist" )
-#		- get today's date - todaysDate=$( date +%Y-%m-%d )
-#		- get difference - 
-#		- if plist file modification date is not today
-#			- get number of days since modification date
-#			- add number of days since modification date to $daysRestartHasBeenRequired
-#		- else continue with existing script
+# Accounts for system downtime by advancing day counter by number of days of downtime
 #
 #####
 
@@ -58,7 +49,17 @@ fi
 # Get current value of daysRestartHasBeenRequired
 daysRestartHasBeenRequired=$( /usr/libexec/PlistBuddy -c "Print :software:macOS:softwareUpdates:daysRestartHasBeenRequired" "$localDataPlist" )
 
+# Get days since $localDataPlist was modified
+plistModDate=$(date -r "$localDataPlist" +%s)
+todaysSincePlistModDate=$(date +%s)          
+daysSincePlistMod=$(expr \( $todaysSincePlistModDate - $plistModDate \) / 86400)
+
 ##### WORK
+
+# Update $daysRestartHasBeenRequired by $daysSincePlistMod to account for system downtime
+if [ "$daysSincePlistMod" -gt 0 ]; then
+	((daysRestartHasBeenRequired=daysRestartHasBeenRequired+daysSincePlistMod))
+fi
 
 # Increment (if restart required) or reset (if not) daysRestartHasBeenRequired in plist
 if [ "$areThereUpdatesThatRequireRestartToday" -ne 0 ]; then
