@@ -74,6 +74,8 @@ else
 fi
 
 # Notify and/or update
+if [ "$daysRestartHasBeenRequired" -eq 0 ]; then
+	exit 0
 elif [ "$daysRestartHasBeenRequired" -gt 0 ] && [ "$daysRestartHasBeenRequired" -lt "$maxUpdateAge" ]; then
   /Library/Application\ Support/JAMF/bin/Management\ Action.app/Contents/MacOS/Management\ Action -title 'Apple Updates Required' -subtitle "Uninstalled patches are $daysRestartHasBeenRequired day(s) old" -message 'Update in Self Service or App Store.'
 else
