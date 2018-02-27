@@ -66,17 +66,17 @@ proxyUrl="$8"
 ####
 
 #### DERIVED VALUES
-# Get package URL
-finalDownloadUrl=$(curl "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}' $addProxyToCurl )
-
-# Get package name
-pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
-
 # Build proxy option for curl commands
 if [ -n "$proxyUrl" ]; then
 	printf "Using $proxyUrl proxy for downloads."
 	addProxyToCurl="-x $proxyUrl"
 fi
+
+# Get package URL
+finalDownloadUrl=$(curl "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}' $addProxyToCurl )
+
+# Get package name
+pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
 
 ####
 
