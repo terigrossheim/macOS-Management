@@ -20,6 +20,7 @@
 # 	3:	No productName provided
 #	4:	No applicationPath provided
 # 	5:	Download error
+#	99:	Bad data - failed checksum or code signature check
 ####
 
 #### VARIABLES
