@@ -5,7 +5,7 @@
 # cURLInstallOffice365Apps.bash
 #
 # Process
-#	• Download and install package from Microsoft HTTPS
+#	• Download and install Office 365 package from Microsoft CDN
 #	• Check package hash
 #	• Check package signature
 #	• Install package
@@ -20,10 +20,10 @@
 # 	3:		No productName provided
 #	4:		No applicationPath provided
 # 	5:		Download error
-# 	401:	Bad download hash
-# 	405:	Bad package signature
-# 	408:	Package installation failure
-# 	406:	Bad application signature
+# 	401:		Bad download hash
+# 	405:		Bad package signature
+# 	408:		Package installation failure
+# 	406:		Bad application signature
 ####
 
 #### VARIABLES
@@ -40,7 +40,7 @@ applicationPath="$7"
 # e.g. /Applications/Microsoft Word.app
 # Do not include escape characters
 proxy="$8"
-# optional
+# optional, HTTP proxy address
 # e.g. http://proxy.company.com:port
 
 	if [ -z "$downloadUrl" ]; then
@@ -70,6 +70,11 @@ finalDownloadUrl=$(curl "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective
 
 # Get package name
 pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
+
+# get package SHA 256 hash
+correctHash=$(curl "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
+
+# proxyArgument="-x $proxy"
 ####
 
 #### DOWNLOAD PACKAGE
@@ -78,10 +83,11 @@ echo "Downloading $pkgName"
 # Download, with proxy if necessary
 if [ "$downloadUrl" = "$finalDownloadUrl" ]; then
 		# fix variables dependent on URL
-		finalDownloadUrl=$(curl -x "$proxy" "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
+		finalDownloadUrl=$(curl "$proxyArgument" "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
 		pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
+		correctHash=$(curl "$proxyArgument" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
 		# download
-		curl --retry 3 --create-dirs -x "$proxy" -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
+		curl --retry 3 --create-dirs "$proxyArgument" -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
 		curlExitCode=$?
 	else
 		# download without proxy
@@ -102,7 +108,6 @@ fi
 
 #### CHECK PACKAGE HASH
 # get hash from macadmins.software
-correctHash=$(curl -x "$proxy" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
 echo "The package hash should be $correctHash"
 # get hash from downloaded package
 downloadHash=$(/usr/bin/shasum -a 256 "$downloadDirectory"/"$pkgName" | awk '{print $1}')
