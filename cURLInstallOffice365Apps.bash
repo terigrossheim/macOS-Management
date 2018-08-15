@@ -39,6 +39,9 @@ productName="$6"
 applicationPath="$7"
 # e.g. /Applications/Microsoft Word.app
 # Do not include escape characters
+proxy="$8"
+# optional
+# e.g. http://proxy.company.com:port
 
 	if [ -z "$downloadUrl" ]; then
 		printf "Parameter 4 is empty. %s\n" "Populate parameter 4 with the package download URL."
@@ -75,10 +78,10 @@ echo "Downloading $pkgName"
 # Download, with proxy if necessary
 if [ "$downloadUrl" = "$finalDownloadUrl" ]; then
 		# fix variables dependent on URL
-		finalDownloadUrl=$(curl -x http://proxy.wal-mart.com:8080 "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
+		finalDownloadUrl=$(curl -x "$proxy" "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
 		pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
 		# download
-		curl --retry 3 --create-dirs -x http://proxy.wal-mart.com:8080 -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
+		curl --retry 3 --create-dirs -x "$proxy" -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
 		curlExitCode=$?
 	else
 		# download without proxy
@@ -99,7 +102,7 @@ fi
 
 #### CHECK PACKAGE HASH
 # get hash from macadmins.software
-correctHash=$(curl -x "http://proxy.wal-mart.com:8080" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
+correctHash=$(curl -x "$proxy" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
 echo "The package hash should be $correctHash"
 # get hash from downloaded package
 downloadHash=$(/usr/bin/shasum -a 256 "$downloadDirectory"/"$pkgName" | awk '{print $1}')
