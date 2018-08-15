@@ -5,7 +5,7 @@
 # cURLInstallOffice365Apps.bash
 #
 # Process
-#	• Download and install Office 365 package from Microsoft CDN
+#	• Download and install package from Microsoft HTTPS
 #	• Check package hash
 #	• Check package signature
 #	• Install package
@@ -20,10 +20,10 @@
 # 	3:		No productName provided
 #	4:		No applicationPath provided
 # 	5:		Download error
-# 	401:		Bad download hash
-# 	405:		Bad package signature
-# 	408:		Package installation failure
-# 	406:		Bad application signature
+# 	401:	Bad download hash
+# 	405:	Bad package signature
+# 	408:	Package installation failure
+# 	406:	Bad application signature
 ####
 
 #### VARIABLES
@@ -72,7 +72,7 @@ finalDownloadUrl=$(curl "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective
 pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
 
 # get package SHA 256 hash
-correctHash=$(curl "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
+correctHash=$(curl "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}' | cut -c 4- )
 
 # proxyArgument="-x $proxy"
 ####
@@ -85,7 +85,7 @@ if [ "$downloadUrl" = "$finalDownloadUrl" ]; then
 		# fix variables dependent on URL
 		finalDownloadUrl=$(curl "$proxyArgument" "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
 		pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
-		correctHash=$(curl "$proxyArgument" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}')
+		correctHash=$(curl "$proxyArgument" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}' | cut -c 4- )
 		# download
 		curl --retry 3 --create-dirs "$proxyArgument" -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
 		curlExitCode=$?
