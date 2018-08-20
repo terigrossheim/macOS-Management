@@ -32,10 +32,13 @@ downloadUrl="$4"
 # copy from macadmins.software
 downloadDirectory="$5"
 # e.g. /Library/myOrg/Packages
-productName="$6"
-# copy keyphrase from "Latest Released Package" column @ macadmins.software
-# e.g. "Word 365"
-# Do not include quotes
+
+	# 20180820 - NOW DERIVING PRODUCT NAME FROM MS XML. See line 93
+	# productName="$6"
+	# copy keyphrase from "Latest Released Package" column @ macadmins.software
+	# e.g. "Word 365"
+	# Do not include quotes
+
 applicationPath="$7"
 # e.g. /Applications/Microsoft Word.app
 # Do not include escape characters
@@ -53,10 +56,11 @@ proxy="$8"
 		exit 2
 	fi
 
-	if [ -z "$productName" ]; then
-		printf "Parameter 6 is empty. %s\n" "Populate parameter 6 with the product name as shown at macadmins.software."
-		exit 3
-	fi
+	# 20180820 - NOW DERIVING PRODUCT NAME FROM MS XML. See line 93
+	# if [ -z "$productName" ]; then
+	# 	printf "Parameter 6 is empty. %s\n" "Populate parameter 6 with the product name as shown at macadmins.software."
+	# 	exit 3
+	# fi
 
 	if [ -z "$applicationPath" ]; then
 		printf "Parameter 7 is empty. %s\n" "Populate parameter 6 with the path to the installed application."
@@ -65,35 +69,41 @@ proxy="$8"
 ####
 
 #### DERIVED VALUES
+
+# clear proxyArgument
+proxyArgument=""
+
 # Get package URL
 finalDownloadUrl=$(curl "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
+	# Correct if proxy is necessary
+	if [ "$downloadUrl" = "$finalDownloadUrl" ]; then
+		proxyArgument="-x $proxy"
+		finalDownloadUrl=$(curl $proxyArgument "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
+	fi
 
 # Get package name
 pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
 
-# get package SHA 256 hash
-correctHash=$(curl "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}' | cut -c 4- )
+# get MS Office release XML
+officeReleaseXml=$(curl $proxyArgument https://macadmins.software/latest.xml)
 
-# proxyArgument="-x $proxy"
+# generate downloadURL xpath search syntax
+downloadUrlXpathSearch=$"'"$downloadUrl"'"
+
+# get product name
+productName=$(echo $officeReleaseXml | /usr/bin/xpath "/latest/package[download[contains(text(), $downloadUrlXpathSearch)]]/title/text()")
+
+# get package SHA 256 hash
+correctHash=$(echo $officeReleaseXml | /usr/bin/xpath "/latest/package[download[contains(text(), $downloadUrlXpathSearch)]]/sha256/text()")
+
 ####
 
 #### DOWNLOAD PACKAGE
 echo "Downloading $pkgName"
 
 # Download, with proxy if necessary
-if [ "$downloadUrl" = "$finalDownloadUrl" ]; then
-		# fix variables dependent on URL
-		finalDownloadUrl=$(curl "$proxyArgument" "$downloadUrl" -s -L -I -o /dev/null -w '%{url_effective}')
-		pkgName=$(printf "%s" "${finalDownloadUrl[@]}" | sed 's@.*/@@')
-		correctHash=$(curl "$proxyArgument" "https://macadmins.software" | sed -n '/Latest Released/,$p' | grep "$productName" | awk -F "<td>|<td*>|</td>|<br/>" '{print $7}' | cut -c 4- )
-		# download
-		curl --retry 3 --create-dirs "$proxyArgument" -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
-		curlExitCode=$?
-	else
-		# download without proxy
-		curl --retry 3 --create-dirs -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
-		curlExitCode=$?
-fi
+curl --retry 3 --create-dirs $proxyArgument -o "$downloadDirectory"/"$pkgName" -O "$finalDownloadUrl"
+curlExitCode=$?
 
 # download error handling
 	if [ "$curlExitCode" -ne 0 ]; then
