@@ -176,9 +176,4 @@ for app in $apps; do
 	cleanUp
 	done
 	
-	if [ "$failedInstallCount" -ne 0 ]; then
-		printf "$timeStamp %s\n" "$failedInstallCount applications failed to install."
-		exit $failedInstallCount
-	fi
-
-exit 0
+exit $failedInstallCount
