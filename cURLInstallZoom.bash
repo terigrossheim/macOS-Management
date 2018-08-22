@@ -44,9 +44,9 @@ zoomPluginUrl="https://zoom.us/client/latest/ZoomMacOutlookPlugin.pkg"
 		
 		# Set application path
 		if [ "$pkgName" = "Zoom.pkg" ]; then
-			applicationPath="/Applications/zoom.us.app"
+			applicationPath=("/Applications/zoom.us.app")
 		else
-			applicationPath="/Applications/ZoomOutlookPlugin"
+			applicationPath=("/Applications/ZoomOutlookPlugin/PluginLauncher.app" "/Applications/ZoomOutlookPlugin/Uninstall.app")
 			
 		
 		# Set proxy argument if necessary
@@ -101,20 +101,21 @@ zoomPluginUrl="https://zoom.us/client/latest/ZoomMacOutlookPlugin.pkg"
 		fi
 		
 		# Check app signature
-		appSignature=$(/usr/sbin/pkgutil --check-signature "$applicationPath" | grep "Status:")
-		echo "Application Signature $appSignature"
-		# if Apple Root CA and good hash, continue, else delete app, delete package, notify, and exit.
-		if [[ $signatureStatus != *"signed by a certificate trusted"* ]]; then
-				printf "$timeStamp %s\n" "Bad application signature. Deleting application"
-				printf "$timeStamp %s\n" "Failed to install $pkgName."
-				rm -rf "$downloadDirectory"/"$pkgName"
-				rm -rf "$applicationPath"
-				((failedInstallCount++))
-				return
-			else
-				echo "Package Signature $signatureStatus"
-		fi	
-		
+		for path in "${applicationPath[@]}"; do
+			appSignature=$(/usr/sbin/pkgutil --check-signature "$path" | grep "Status:")
+			echo "Application Signature $appSignature"
+			# if Apple Root CA and good hash, continue, else delete app, delete package, notify, and exit.
+			if [[ $signatureStatus != *"signed by a certificate trusted"* ]]; then
+					printf "$timeStamp %s\n" "Bad application signature. Deleting application"
+					printf "$timeStamp %s\n" "Failed to install $pkgName."
+					rm -rf "$downloadDirectory"/"$pkgName"
+					rm -rf "$applicationPath"
+					((failedInstallCount++))
+					return
+				else
+					echo "Package Signature $signatureStatus"
+			fi	
+		done
 	}
 
 	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
