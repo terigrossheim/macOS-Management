@@ -61,7 +61,8 @@ downloadExt=$(echo "$downloadExt" | tr '[:upper:]' '[:lower:]')
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 downloadFile(){
-	# JUST DOWNLOAD
+	# rm contents of $downloadDirectory
+	# DOWNLOAD
 }
 
 validateChecksum(){
