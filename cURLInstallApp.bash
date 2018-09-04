@@ -89,18 +89,18 @@ installApplication(){
 	# PKG and APP - check signature and error, exit, and delete offending file(s) on fail.
 case $downloadExt in
     pkg)
-        # install package
-        ;;
+		# install package
+		;;
     app)
-        # move to /Applications
-        ;;
+		# move to /Applications
+		;;
 	dmg)
-        # Mount dmg
+		# Mount dmg
 		# Find app bundle(s) and/or pkgs at root of DMG, populate array $itemsToInstall
 		# Loop through $itemsToInstall
 			# if pkg; install pkg
 				# elif app; copy app to /Applications
-        ;;
+		;;
 	esac
 
 }
@@ -122,18 +122,18 @@ if [ -n "$checksumAvailable" ]; then
 fi
 
 case $downloadExt in
-    pkg)
+	pkg)
 		validatePkgSignature
-        ;;
-    app)
-        validateAppSignature
-        ;;
+		;;
+	app)
+		validateAppSignature
+		;;
 	dmg)
-        :
-        ;;
-    *)
-        printf "$timeStamp %s\n" "Downloaded $downloadFile from..."
-        printf "$timeStamp %s\n" "$finalownloadUrl"
+		:
+		;;
+	*)
+		printf "$timeStamp %s\n" "Downloaded $downloadFile from..."
+		printf "$timeStamp %s\n" "$finalownloadUrl"
 		printf "$timeStamp %s\n" "is an unknown file type."
 		rm -rf "$downloadDirectory"/"$downloadFile"
 		printf "$timeStamp %s\n" "Deleted $downloadFile."
