@@ -17,6 +17,7 @@ sourceUrl="$6"
 # Can be a specific file URL or a dynamic web link.
 # e.g. 	https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg
 #		https://www.vendor.com/latestDownload
+# For security's sake, ONLY USE HTTPS LINKS FROM KNOWN GOOD VENDOR SOURCES
 
 checksumAvailable="$7"
 # Optional - Make non-null to trigger checksum validation for download.
